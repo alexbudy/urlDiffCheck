@@ -6,9 +6,10 @@ import time
 import urllib.request as ur
 from sys import argv
 import os.path
+from datetime import datetime
 
 ### default params, can be passed as flags to change
-secondsToSleep = 5 # default value = 1 hour. Override with flag
+secondsToSleep = 3600 # 3600s = 1hr 
 urlToCheck = "blh"
 fileToWrite = "sourceOfLastRun.html" # stored in same folder as script by default
 sendEmail = False
@@ -25,7 +26,7 @@ def checkUrl():
 		if (currentFileHtml == fetchedHtml):
 			print("same")
 		else:
-			print("diff")
+			print("diff at " + str(datetime.now()))
 
 	else:
 		f = open(fileToWrite, 'w')
