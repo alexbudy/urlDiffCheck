@@ -9,7 +9,7 @@ import os.path
 
 ### default params, can be passed as flags to change
 secondsToSleep = 5 # default value = 1 hour. Override with flag
-urlToCheck = "fillinhere"
+urlToCheck = "blh"
 fileToWrite = "sourceOfLastRun.html" # stored in same folder as script by default
 sendEmail = False
 emailDest = ""
@@ -17,12 +17,16 @@ verbose = True
 ###
 
 def checkUrl():
-
-	fetchedHtml = str(ur.urlopen(urlToCheck).read())
+	with ur.urlopen(urlToCheck) as openedUrl:
+		fetchedHtml = str(openedUrl.read().decode('utf-8'))
 
 	if (os.path.isfile(fileToWrite)):
-		print("isafile")
-		return
+		currentFileHtml = open(fileToWrite).read()
+		if (currentFileHtml == fetchedHtml):
+			print("same")
+		else:
+			print("diff")
+
 	else:
 		f = open(fileToWrite, 'w')
 		f.write(fetchedHtml)
