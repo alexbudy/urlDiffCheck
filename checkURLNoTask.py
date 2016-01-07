@@ -7,15 +7,33 @@ import urllib.request as ur
 from sys import argv
 import os.path
 from datetime import datetime
+import difflib
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
+
+##   If you are going to recommit this file with your own information, look for no-comit hooks
+   # These hooks will filter sensitive information on my machine, but will not do so on your machine	 
 
 ### default params, can be passed as flags to change
-secondsToSleep = 3600 # 3600s = 1hr 
-urlToCheck = "" #gitignore
-fileToWrite = "sourceOfLastRun.html" # stored in same folder as script by default
-sendEmail = False
-emailDest = ""
 verbose = True
-###
+secondsToSleep = 3600 # 3600s = 1hr 
+urlToCheck = "www.Google.com" #no-commit
+fileToWrite = "sourceOfLastRun.html" # stored in same folder as script by default
+
+# email parameters
+sendEmailFlag = True
+emailDest = "www.Google.com"  #no-commit 
+								  #make a list if multiple recipients
+emailType = 'html' # can also be html.  Other values will break!
+#############
+
+### Values to be set by modifying this file only, not thru command line
+emailSrc = emailDest # change here if dest is different than from
+emailSrcPass = "www.Google.com"  #no-commit this password generated from https://support.google.com/accounts/answer/185833
+									# refer to README.md for more details
+#############
+
 
 def checkUrl():
 	with ur.urlopen(urlToCheck) as openedUrl:
@@ -24,17 +42,62 @@ def checkUrl():
 	if (os.path.isfile(fileToWrite)):
 		currentFileHtml = open(fileToWrite).read()
 		if (currentFileHtml == fetchedHtml):
-			print("same at " + str(datetime.now()))
+			print("same at " + createTimeStamp())
 		else:
-			print("diff at " + str(datetime.now()))
+			#writeFileBack(fetchedHtml)
+			print("diff at " + createTimeStamp())
+			diff = getDiffString(currentFileHtml, fetchedHtml)
+			print(diff)
+			emailDiff(diff)
 
 	else:
-		f = open(fileToWrite, 'w')
-		f.write(fetchedHtml)
-		print("creating file and rerunning")
+		writeFileBack(fetchedHtml, True)
 		checkUrl()
+
+# feel free to modify this function as needed to 'prettify' your email bodies	
+def emailDiff(diff):
+	if (sendEmailFlag):
+		server = smtplib.SMTP('smtp.gmail.com', 587)
+		server.starttls()
+		server.login(emailSrc, emailSrcPass)
+		 
+		msg = createMIMEMsg(diff)
+
+		server.sendmail(emailSrc, emailDest, msg.as_string())
+		server.quit()
+
+def createMIMEMsg(txt):
+	msg = MIMEMultipart('alternative')
+	msg['Subject'] = 'Latest diff of webpage "www.Google.com"' #no-commit
+	msg['To'] = emailDest
+
+	txt += "\n\n\n\n\n\nURL of webpage: " + urlToCheck
+	html =  MIMEText(txt, emailType)
+
+	msg.attach(html)
+	return msg
 	
-	
+
+def writeFileBack(src, created = False,):
+	with open(fileToWrite, 'w') as f:
+		f.write(src)
+	if (created):
+		action = 'created'
+	else:
+		action = 'overwritten'
+
+	print("		File " + action + " at " + createTimeStamp())
+
+def getDiffString(orig, new):
+	d = difflib.HtmlDiff()
+	diff = list(difflib.context_diff(orig.splitlines(), new.splitlines()))
+	diff = [line[1:] for line in diff if line[0] == '!'] # the '!' corresponds with difflib for diff presentation
+	return '\n'.join(list(diff))
+
+# prints a simple time stamp for readibility
+def createTimeStamp():
+	now = datetime.now()
+	return now.strftime("%b %d, %Y at %I:%M.%S %p")
 
 if __name__ == "__main__":
 	while True:
