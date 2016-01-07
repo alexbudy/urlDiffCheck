@@ -9,8 +9,7 @@ import os.path
 from datetime import datetime
 
 ### default params, can be passed as flags to change
-secondsToSleep = 3600 # 3600s = 1hr
- 
+secondsToSleep = 3600 # 3600s = 1hr 
 urlToCheck = "" #gitignore
 fileToWrite = "sourceOfLastRun.html" # stored in same folder as script by default
 sendEmail = False
