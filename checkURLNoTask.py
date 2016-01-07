@@ -16,10 +16,9 @@ from email.mime.multipart import MIMEMultipart
    # These hooks will filter sensitive information on my machine, but will not do so on your machine	 
 
 ### default params, can be passed as flags to change
-verbose = True
 secondsToSleep = 3600 # 3600s = 1hr 
 urlToCheck = "www.Google.com" #no-commit
-fileToWrite = "sourceOfLastRun.html" # stored in same folder as script by default
+fileToWrite = "sourceOfLastRun.html" # file with last source of site
 
 # email parameters
 sendEmailFlag = True
@@ -47,7 +46,6 @@ def checkUrl():
 			#writeFileBack(fetchedHtml)
 			print("diff at " + createTimeStamp())
 			diff = getDiffString(currentFileHtml, fetchedHtml)
-			print(diff)
 			emailDiff(diff)
 
 	else:
