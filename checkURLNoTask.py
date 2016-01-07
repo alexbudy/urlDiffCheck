@@ -5,6 +5,8 @@
 import time
 import urllib.request as ur
 from sys import argv
+import sys, getopt
+import argparse
 import os.path
 from datetime import datetime
 import difflib
@@ -22,13 +24,12 @@ fileToWrite = "sourceOfLastRun.html" # file with last source of site
 
 # email parameters
 sendEmailFlag = True
-emailDest = "www.Google.com"  #no-commit 
-								  #make a list if multiple recipients
+emailDest = ["www.Google.com"]  #no-commit, make a list if multiple recipients
 emailType = 'html' # can also be html.  Other values will break!
 #############
 
 ### Values to be set by modifying this file only, not thru command line
-emailSrc = emailDest # change here if dest is different than from
+emailSrc = emailDest[0] # change here if dest is different than from
 emailSrcPass = "www.Google.com"  #no-commit this password generated from https://support.google.com/accounts/answer/185833
 									# refer to README.md for more details
 #############
@@ -43,7 +44,7 @@ def checkUrl():
 		if (currentFileHtml == fetchedHtml):
 			print("same at " + createTimeStamp())
 		else:
-			#writeFileBack(fetchedHtml)
+			writeFileBack(fetchedHtml)
 			print("diff at " + createTimeStamp())
 			diff = getDiffString(currentFileHtml, fetchedHtml)
 			emailDiff(diff)
@@ -67,7 +68,7 @@ def emailDiff(diff):
 def createMIMEMsg(txt):
 	msg = MIMEMultipart('alternative')
 	msg['Subject'] = 'Latest diff of webpage "www.Google.com"' #no-commit
-	msg['To'] = emailDest
+	msg['To'] = emailDest[0]
 
 	txt += "\n\n\n\n\n\nURL of webpage: " + urlToCheck
 	html =  MIMEText(txt, emailType)
@@ -98,6 +99,20 @@ def createTimeStamp():
 	return now.strftime("%b %d, %Y at %I:%M.%S %p")
 
 if __name__ == "__main__":
+	opts, args = getopt.getopt(sys.argv[1:],"hs:",["seconds="])
+
+	for opt, arg in opts:
+		print(opt)
+		print(arg)
+		if opt == '-h':
+			print('python checkURLNoTask.py -s <seconds>')
+			sys.exit()
+		elif opt in ("-s", "--seconds"):
+			secondsToSleep = int(arg)
+
+	print ("checking url: " + urlToCheck + " every " + str(secondsToSleep) + 
+		" seconds with email sending: " + str(sendEmailFlag))
+	
 	while True:
 		checkUrl()
 		time.sleep(secondsToSleep) 

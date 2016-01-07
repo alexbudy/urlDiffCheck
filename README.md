@@ -2,7 +2,8 @@
 
 ## An exploration of various ways to alert user of change in source of specific webpage, through console and/or email
 
-At first pass targeted for windows machines, however can be used on Unix with some tweaking
+At first pass targeted for windows machines, however can be used on Unix with some tweaking  
+This README may have some errors - please contact me if such is the case
 
 ### Method 1 - Run a python script from command line
 Open checkURLNoTask.py, fill out the variables in the headers:
@@ -21,10 +22,13 @@ To run the script, open a terminal (if on Windows you will need to install Pytho
 
 `python checkURLNoTask.py`
 
+or run `python checkURLNoTask.py -h` to view command line options
+
+
 Keep this running for as long as you want, just know that when your computer shuts down/goes to sleep the script will stop as well.
 
 
-NOTE:  To be able to send python email through the gmail SMTP server you will need to generate an 'application-specific' password. [Here](https://support.google.com/accounts/answer/185833) is Google's page regarding this.  Simply generate a password here, then paste it into `checkURLNoTask.py` script in the password field to allow email sending.  
+**NOTE:**  To be able to send python email through the gmail SMTP server you will need to generate an 'application-specific' password. [Here](https://support.google.com/accounts/answer/185833) is Google's page regarding this.  Simply generate a password here, then paste it into `checkURLNoTask.py` script in the password field to allow email sending.  
 **CAREFUL** - make sure to remove this password when committing - otherwise this password may become available to the public!
 
 
