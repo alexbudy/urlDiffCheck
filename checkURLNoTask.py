@@ -9,8 +9,9 @@ import os.path
 from datetime import datetime
 
 ### default params, can be passed as flags to change
-secondsToSleep = 3600 # 3600s = 1hr 
-urlToCheck = "blh"
+secondsToSleep = 3600 # 3600s = 1hr
+ 
+urlToCheck = "" #gitignore
 fileToWrite = "sourceOfLastRun.html" # stored in same folder as script by default
 sendEmail = False
 emailDest = ""
@@ -24,14 +25,15 @@ def checkUrl():
 	if (os.path.isfile(fileToWrite)):
 		currentFileHtml = open(fileToWrite).read()
 		if (currentFileHtml == fetchedHtml):
-			print("same")
+			print("same at " + str(datetime.now()))
 		else:
 			print("diff at " + str(datetime.now()))
 
 	else:
 		f = open(fileToWrite, 'w')
 		f.write(fetchedHtml)
-		print("not a file")
+		print("creating file and rerunning")
+		checkUrl()
 	
 	
 
