@@ -32,6 +32,10 @@ Keep this running for as long as you want, just know that when your computer shu
 **CAREFUL** - make sure to remove this password when committing - otherwise this password may become available to the public!
 
 
-### Method 2 - Use Windows Task Scheduler
+### Method 2 - Windows Methods
+Here are some of the methods I tried to give me results:  
+* You may put my `bashScript.sh`, or any bash script for that matter, into the Task Scheduler to schedule the script to run upon machine startup, machine unlocking, etc.  The drawback here is that you will only get alerts when your machine is awake. Refer to [this](http://www.howtogeek.com/123393/how-to-automatically-run-programs-and-set-reminders-with-the-windows-task-scheduler/) guide for more details: 
+* You my put a **shortcut copy** of `bashScript.sh` into your Windows Startup folder, where it will be run on startup.  Same problem as above.  Find where your Startup folder is by pressing Start -> Type run.exe -> type `shell:startup`
+* Upload your python script to a www.pythonanywhere.com account, where you can run small python programs in the cloud for free.  This is the method I am sticking too because it allows me to get email updates when the url source changes at any time
 
 ### Method 3 - On Linux/Unix, set up a cron task

@@ -13,14 +13,23 @@ import difflib
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import logging
 
 ##   If you are going to recommit this file with your own information, look for no-comit hooks
    # These hooks will filter sensitive information on my machine, but will not do so on your machine	 
+
+# logging setup
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s %(levelname)s %(message)s',
+                    filename='tmp.log',
+                    filemode='w')
 
 ### default params, can be passed as flags to change
 secondsToSleep = 3600 # 3600s = 1hr 
 urlToCheck = "www.Google.com" #no-commit
 fileToWrite = "sourceOfLastRun.html" # file with last source of site
+verbose = True # if True, print 
+log = True # if True, write to log
 
 # email parameters
 sendEmailFlag = True
@@ -42,10 +51,10 @@ def checkUrl():
 	if (os.path.isfile(fileToWrite)):
 		currentFileHtml = open(fileToWrite).read()
 		if (currentFileHtml == fetchedHtml):
-			print("same at " + createTimeStamp())
+			writeLine("same at " + createTimeStamp())
 		else:
 			writeFileBack(fetchedHtml)
-			print("diff at " + createTimeStamp())
+			writeLine("diff at " + createTimeStamp())
 			diff = getDiffString(currentFileHtml, fetchedHtml)
 			emailDiff(diff)
 
@@ -85,7 +94,7 @@ def writeFileBack(src, created = False,):
 	else:
 		action = 'overwritten'
 
-	print("		File " + action + " at " + createTimeStamp())
+	writeLine("		File " + action + " at " + createTimeStamp())
 
 def getDiffString(orig, new):
 	d = difflib.HtmlDiff()
@@ -98,20 +107,24 @@ def createTimeStamp():
 	now = datetime.now()
 	return now.strftime("%b %d, %Y at %I:%M.%S %p")
 
+def writeLine(s):
+	if verbose:
+		print(s)
+	if log:
+		logging.info(s)
+
 if __name__ == "__main__":
 	opts, args = getopt.getopt(sys.argv[1:],"hs:",["seconds="])
 
 	for opt, arg in opts:
-		print(opt)
-		print(arg)
 		if opt == '-h':
 			print('python checkURLNoTask.py -s <seconds>')
 			sys.exit()
 		elif opt in ("-s", "--seconds"):
 			secondsToSleep = int(arg)
 
-	print ("checking url: " + urlToCheck + " every " + str(secondsToSleep) + 
-		" seconds with email sending: " + str(sendEmailFlag))
+	line = "checking url: " + urlToCheck + " every " + str(secondsToSleep) + " seconds with email sending: " + str(sendEmailFlag)
+	writeLine(line)
 	
 	while True:
 		checkUrl()
