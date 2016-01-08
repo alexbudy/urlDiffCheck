@@ -23,7 +23,8 @@ logging.basicConfig(level=logging.INFO,
                     filemode='w')
 
 ### default params, can be passed as flags to change
-secondsToSleep = 3600 # 3600s = 1hr 
+secondsToSleep = 3600 # 3600s = 1hr
+numberOfRuns = -1 #-1 is infinite
 urlToCheck = "www.Google.com" #no-commit
 fileToWrite = "sourceOfLastRun.html" # file with last source of site
 verbose = True # if True, print 
@@ -111,7 +112,7 @@ def writeLine(s):
 		logging.info(s)
 
 if __name__ == "__main__":
-	opts, args = getopt.getopt(sys.argv[1:],"hs:",["seconds="])
+	opts, args = getopt.getopt(sys.argv[1:],"hs:r:",["seconds=", "runs="])
 
 	for opt, arg in opts:
 		if opt == '-h':
@@ -119,10 +120,16 @@ if __name__ == "__main__":
 			sys.exit()
 		elif opt in ("-s", "--seconds"):
 			secondsToSleep = int(arg)
+		elif opt in ("-r", "--runs"):
+			numberOfRuns = int(arg)
 
-	line = "checking url: " + urlToCheck + " every " + str(secondsToSleep) + " seconds with email sending: " + str(sendEmailFlag)
+	line = "checking url: " + urlToCheck + " every " + str(secondsToSleep) + " seconds " + str(numberOfRuns) + " times with email sending: " + str(sendEmailFlag)
 	writeLine(line)
 	
-	while True:
+	runCount = 0
+	while runCount != numberOfRuns:
 		checkUrl()
+		runCount+=1
 		time.sleep(secondsToSleep) 
+
+	writeLine("Checked URL " + str(numberOfRuns) + ", ending script")
