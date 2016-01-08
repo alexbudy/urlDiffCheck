@@ -30,14 +30,14 @@ Keep this running for as long as you want, just know that when your computer shu
 
 
 **NOTE:**  To be able to send python email through the gmail SMTP server you will need to generate an 'application-specific' password. [Here](https://support.google.com/accounts/answer/185833) is Google's page regarding this.  Simply generate a password here, then paste it into `checkURLNoTask.py` script in the password field to allow email sending.  
-**CAREFUL** - make sure to remove this password when committing - otherwise this password may become available to the public!
+**CAREFUL** - make sure to remove this password when committing - otherwise this password may become available to the public!  
 **NOTE2:** My script, due to some package dependencies, requires Python 3.  If you do not have the latest python version (as is the case with the default EC2 Amazon server out of box) or Python 3 is not the default Python version, a simple solution is to change the `python` keyword to `python34`, as in `python34 checkURLNoTask.py`
 
 
 ### Method 2 - Windows Methods
 Here are some of the methods I tried to give me results:  
 * You may put my `bashScript.sh`, or any bash script for that matter, into the Task Scheduler to schedule the script to run upon machine startup, machine unlocking, etc.  The drawback here is that you will only get alerts when your machine is awake. Refer to [this](http://www.howtogeek.com/123393/how-to-automatically-run-programs-and-set-reminders-with-the-windows-task-scheduler/) guide for more details: 
-* You my put a **shortcut copy** of `bashScript.sh` into your Windows Startup folder, where it will be run on startup.  Same problem as above.  Find where your Startup folder is by pressing Start -> Type run.exe -> type `shell:startup`
+* You may put a **shortcut copy** of `bashScript.sh` into your Windows Startup folder, where it will be run on startup.  Same problem as above.  Find where your Startup folder is by pressing Start -> Type run.exe -> type `shell:startup`
 * Upload your python script to a www.pythonanywhere.com account, where you can run small python programs in the cloud for free.  I thought this would be the best method because with a free account I'd be able to run my simple script but unfortunately the site I want to check is not whitelisted for a free account.  
   
 Other solutions - interested to hear.  Without paying, I was not able to figure out a way thus far to make this happen. Perhaps deploying Django on a Heroku service with the script somehow deployed would be acceptable, but I have yet to try this.
@@ -45,3 +45,21 @@ Other solutions - interested to hear.  Without paying, I was not able to figure 
 ### Method 3 - On Linux/Unix, set up a cron task
 First, I got myself the free version of the Amazon EC2 account, which gives 750 hours/month free for the first year.  This is enough for my purposes.  
 After setting up my free linux virtual machine (refer to the Amazon guide for instructions) I ssh'ed in and cloned my project. I set my variables with email/pass/website, and was able to run my script. Now I need to schedule a cron task to run my script on a timer - that way I can just set it and forget it!
+
+I wrapped my python script in a bash script, making sure to specify the full path to the python file in the script (cron is finicky about that). Also, you will have to go through all file paths used in the python script (`fileToWrite` and logging `filename` and change them to absolute paths, for the same reason). Refer to `bashScript.sh`
+
+**NOTE:** this script needs to be marked executable to be executed by cron. So change its permissions with   
+`chmod 755 bashScript.sh`
+
+I configured my script to run every half hour, 5 times (so 5 times in 3 hours) with these two flags: `-s 1800 -r 5`.  The last step is configuring the cron task, which is super easy. Run   
+`crontab -e`  
+then add this line:  
+`0 */3 * * * /home/ec2-user/urlDiffCheck/bashScript.sh`  
+The above states to run the bash script every third hour ([read this, or any other guide, on cron](http://www.thesitewizard.com/general/set-cron-job.shtml)). This way there is no overlap with my script and no need to worry about killing processes.
+
+
+And now I get my emails! Finally :)
+
+
+## Thank you for reading my guide on monitoring a webpage for updates. It's not super simple to use without throwing some money at servers, but I learned a lot along the way, and hope you got something out of it as well. ##
+####As always, let me know if any questions or suggestions####
