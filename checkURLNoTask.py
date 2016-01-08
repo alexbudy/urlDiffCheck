@@ -4,9 +4,7 @@
 # 	or create new one if nonexistant
 import time
 import urllib.request as ur
-from sys import argv
 import sys, getopt
-import argparse
 import os.path
 from datetime import datetime
 import difflib
@@ -97,7 +95,6 @@ def writeFileBack(src, created = False,):
 	writeLine("		File " + action + " at " + createTimeStamp())
 
 def getDiffString(orig, new):
-	d = difflib.HtmlDiff()
 	diff = list(difflib.context_diff(orig.splitlines(), new.splitlines()))
 	diff = [line[1:] for line in diff if line[0] == '!'] # the '!' corresponds with difflib for diff presentation
 	return '\n'.join(list(diff))
